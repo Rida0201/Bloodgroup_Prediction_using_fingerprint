@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fingerprint Blood Group Prediction</title>
+
+    <style>
+        body {
+           margin: 0;
+           font-family: Arial, sans-serif;
+           background:url("{{ url_for('static', filename='bg_fingerprint.png') }}");
+           background-size: cover;  
+           background-position: center;
+           background-repeat: no-repeat;
+           height: 100vh;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+        }
+        
+        body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.02);
+        pointer-events: none;
+        }
+
+        .card {
+           background: rgba(255, 255, 255, 0.92);
+           padding: 30px;
+           border: 1px solid rgba(255, 255, 255, 0.4);
+           border-radius: 18px;
+           width: 380px;
+           text-align: center;
+           box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+           backdrop-filter: blur(6px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            width: 70px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+        }
+
+        button {
+            background: #1e90ff;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #187bcd;
+        }
+
+        .preview-box {
+            margin-top: 15px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .preview-box img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .spinner {
+            display: none;
+            margin: 15px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 15px;
+            color: green;
+            font-weight: bold;
+        }
+
+        .accuracy-bar {
+            background: #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .accuracy-fill {
+            height: 18px;
+            background: linear-gradient(90deg, #00c853, #b2ff59);
+            width: 0%;
+            transition: width 1s;
+        }
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.05); /* barely visible */
+            pointer-events: none;
+        }
+    </style>     
+</head>
+
+<body>
+<div class="overlay"></div>
+<div class="card">
+
+    <!-- PROJECT LOGO -->
+    <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
+
+    <h2>Fingerprint Blood Group Prediction</h2>
+
+    <form action="/predict" method="POST" enctype="multipart/form-data" onsubmit="showSpinner()">
+
+        <!-- MOBILE CAMERA ENABLED -->
+        <input type="file" name="image" accept="image/*" capture="environment" required onchange="previewImage(event)">
+
+        <br><br>
+
+        <button type="submit">Predict Blood Group</button>
+    </form>
+
+    <!-- LOADING SPINNER -->
+    <div class="spinner" id="spinner"></div>
+
+    <!-- IMAGE PREVIEW -->
+    <div class="preview-box" id="previewBox" style="display:none;">
+        <img id="preview">
+    </div>
+
+    <!-- RESULT -->
+    {% if prediction %}
+    <div class="result">
+        🩸 Predicted Blood Group: {{ prediction }} <br>
+        📊 Confidence: {{ confidence }}%
+        <div class="accuracy-bar">
+            <div class="accuracy-fill" style="width: {{ confidence|int }}%;"></div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<div id="hasPrediction" data-value="{{ 'yes' if prediction else 'no' }}"></div>
+<script>
+    function previewImage(event) {
+        const previewBox = document.getElementById('previewBox');
+        const preview = document.getElementById('preview');
+        preview.src = URL.createObjectURL(event.target.files[0]);
+        previewBox.style.display = "block";
+    }
+
+    function showSpinner() {
+        document.getElementById('spinner').style.display = "block";
+    }
+
+    window.onload = function () {
+        const hasPrediction = document
+            .getElementById("hasPrediction")
+            .dataset.value;
+
+        if (hasPrediction === "yes") {
+            document.getElementById("spinner").style.display = "none";
+        }
+    };
+</script>
+</body>
+</html>
