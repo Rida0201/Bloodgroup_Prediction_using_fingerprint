@@ -58,6 +58,3 @@ Author
 Rida Amin Jafri
 Final Year B.Tech Project
 Department of Information Technology
-📊 Results
-Achieved Accuracy: XX%
-Model demonstrated promising classification performance on the dataset.
